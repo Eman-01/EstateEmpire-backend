@@ -1,5 +1,5 @@
 import os
-from models import db
+from models import db, Property, Rent, Purchase, Agent, User
 from flask_migrate import Migrate
 from flask import FLask
 from flask_restful import Resource, Api
