@@ -24,6 +24,7 @@ class Property(db.Model, SerializerMixin):
     name = db.Column(db.String, nullable = False)
     image = db.Column(db.String)
     description = db.Column(db.String)
+    price = db.Column(db.Integer)
     status = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, default=func.now())
     
