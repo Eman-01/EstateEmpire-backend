@@ -10,79 +10,55 @@ convention = {
     "pk": "pk_%(table_name)s"
 }
 # Initialize metadata
-metadata = MetaData(naming_convention = convention)
-
+metadata = MetaData(naming_convention=convention)
 
 db = SQLAlchemy(metadata=metadata)
 
 # Models
-
-class Property(db.Model, SerializerMixin):
-    __tablename__ = 'properties'
+# Model showing properties available for rent
+class Rental(db.Model, SerializerMixin):
+    __tablename__ = 'rentals'
     
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable = False)
+    name = db.Column(db.String, nullable=False)
     image = db.Column(db.String)
+    location = db.Column(db.String)
     description = db.Column(db.String)
     price = db.Column(db.Integer)
-    status = db.Column(db.Integer)
+    status = db.Column(db.String)
+    agent_id = db.Column(db.Integer, db.ForeignKey('agents.id'))
     created_at = db.Column(db.DateTime, default=func.now())
+
+    agent = db.relationship('Agent', back_populates='rentals')
+    serialize_only = ('id', 'name', 'image', 'location', 'description', 'price', 'status', 'created_at')
     
-    rents = db.relationship('Rent', back_populates = 'property')
-    purchases = db.relationship('Purchase', back_populates = 'property')
-    
-    serialize_only = ('id', 'name', 'description', 'status', 'created_at')
-    
-    
-class Rent(db.Model, SerializerMixin):
-    __tablename__ = 'rents'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'))
-    created_at = db.Column(db.DateTime, default=func.now())
-    
-    user = db.relationship ('User', back_populates = 'rents')
-    property = db.relationship('Property', back_populates = 'rents')
-    
-    serialize_only = ('id', 'user_id', 'property_id', 'created_At')
-    
+# Model showing properties available for purchase  
 class Purchase(db.Model, SerializerMixin):
     __tablename__ = 'purchases'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'))
+    name = db.Column(db.String, nullable=False)
+    image = db.Column(db.String)
+    location = db.Column(db.String)
+    description = db.Column(db.String)
+    price = db.Column(db.Integer)
+    agent_id = db.Column(db.Integer, db.ForeignKey('agents.id'))
+    status = db.Column(db.String)
     created_at = db.Column(db.DateTime, default=func.now())
     
-    user = db.relationship('User', back_populates='purchases')
-    property = db.relationship('Property', back_populates='purchases')
-    
-    serialize_only = ('id', 'user_id', 'property_id', 'created_At')
-    
+    agent = db.relationship('Agent', back_populates='purchases')
+    serialize_only = ('id', 'name', 'image', 'location', 'description', 'price', 'status', 'created_at')
+
+# Represents property agents who manage rentals and purchases  
 class Agent(db.Model, SerializerMixin):
     __tablename__ = 'agents'
     
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False, unique=True)
-    password = db.Column(db.String)
-    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'))
+    password = db.Column(db.String, nullable=False)
     
-    properties = db.relationship('Property', backref='agent', lazy=True)
+    rentals = db.relationship('Rental', back_populates='agent', lazy=True)
+    purchases = db.relationship('Purchase', back_populates='agent', lazy=True)
     
     serialize_rules = ('-password',)
-    
-class User(db.Model, SerializerMixin):
-    __tablename__ = "users"
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text, nullable=False)
-    email = db.Column(db.String, nullable=False, unique=True)
-    password = db.Column(db.String)
-    
-    rents = db.relationship('Rent', back_populates='user')
-    purchases = db.relationship('Purchase', back_populates='user')
-
-    serialize_rules = ('-password',)
-    
-    
