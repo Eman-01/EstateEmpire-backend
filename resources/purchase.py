@@ -10,7 +10,7 @@ parser.add_argument('description', type=str, required=True, help='Description is
 parser.add_argument('location', type=str, required=True, help='Location is required')
 parser.add_argument('price', type=int, required=True, help='Price i srequired')
 
-
+#purchase property resouurce
 class PurchaseResource(Resource):
     def get(self, id=None):
         if id:
@@ -25,6 +25,7 @@ class PurchaseResource(Resource):
             purchase = [n.to_dict() for n in Purchase.query.all() ]
             reponse = make_response(jsonify(purchase), 200)
             return reponse
+    #update property
     def patch(self, id=None):
         args = self.parser.parser_args()
         purchase = Purchase.query.filter_by(id = id).first()
@@ -40,7 +41,7 @@ class PurchaseResource(Resource):
         
         db.session.commit()
         return {"message": "Property updated successfully"}
-    
+    #add proprty 
     def post(self):
         args = parser.parse_args()
         
@@ -57,7 +58,7 @@ class PurchaseResource(Resource):
         
         return {"message" : "Property created successfully"}, 201
             
-            
+    #delte property by id     
     def delete(self, id):
         purchase = Purchase.query.get_or_404(id)
         db.session.delete(purchase)
