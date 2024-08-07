@@ -1,10 +1,13 @@
 import os
-from models import db, Rental, Purchase, Agent
-from flask_migrate import Migrate
 from flask import Flask
-from flask_restful import Resource, Api
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from flask_restful import Api
 from flask_cors import CORS
-
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager
+from models import db
+from resources.agent import SignupResource, LoginResource
 from resources.purchase import PurchaseResource
 from resources.rental import RentalResource
 
@@ -15,10 +18,18 @@ app = Flask(__name__)
 api = Api(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["JWT_SECRET_KEY"] = "your_secret_key"  
 app.json.compact = False
 
-# Setup CORS
+
 CORS(app)
+
+
+bcrypt = Bcrypt(app)
+
+
+jwt = JWTManager(app)
+
 
 migrate = Migrate(app, db)
 db.init_app(app)
@@ -29,3 +40,8 @@ def index():
 
 api.add_resource(RentalResource, '/rentals', '/rentals/<int:id>')
 api.add_resource(PurchaseResource, '/purchases', '/purchases/<int:id>')
+api.add_resource(SignupResource, '/signup')
+api.add_resource(LoginResource, '/login')
+
+if __name__ == '__main__':
+    app.run(debug=True)

@@ -1,6 +1,8 @@
 from sqlalchemy import MetaData, DateTime, func
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 convention = {
     "ix": 'ix_%(column_0_label)s',
@@ -9,13 +11,9 @@ convention = {
     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
     "pk": "pk_%(table_name)s"
 }
-# Initialize metadata
 metadata = MetaData(naming_convention=convention)
-
 db = SQLAlchemy(metadata=metadata)
 
-# Models
-# Model showing properties available for rent
 class Rental(db.Model, SerializerMixin):
     __tablename__ = 'rentals'
     
@@ -31,8 +29,7 @@ class Rental(db.Model, SerializerMixin):
 
     agent = db.relationship('Agent', back_populates='rentals')
     serialize_only = ('id', 'name', 'image', 'location', 'description', 'price', 'status', 'created_at')
-    
-# Model showing properties available for purchase  
+
 class Purchase(db.Model, SerializerMixin):
     __tablename__ = 'purchases'
     
@@ -49,16 +46,25 @@ class Purchase(db.Model, SerializerMixin):
     agent = db.relationship('Agent', back_populates='purchases')
     serialize_only = ('id', 'name', 'image', 'location', 'description', 'price', 'status', 'created_at')
 
-# Represents property agents who manage rentals and purchases  
-class Agent(db.Model, SerializerMixin):
+class Agent(db.Model, UserMixin):
     __tablename__ = 'agents'
     
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    email = db.Column(db.String, nullable=False, unique=True)
-    password = db.Column(db.String, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+   
     
     rentals = db.relationship('Rental', back_populates='agent', lazy=True)
     purchases = db.relationship('Purchase', back_populates='agent', lazy=True)
     
-    serialize_rules = ('-password',)
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "email": self.email,
+        }
