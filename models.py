@@ -24,9 +24,11 @@ class Rental(db.Model, SerializerMixin):
     description = db.Column(db.String)
     price = db.Column(db.Integer)
     status = db.Column(db.String)
+    unit_type_id = db.Column(db.Integer, db.ForeignKey('unit_types.id'))
     agent_id = db.Column(db.Integer, db.ForeignKey('agents.id'))
     created_at = db.Column(db.DateTime, default=func.now())
-
+    
+    unit_type = db.relationship('Unit_type', back_populates = 'unit_types')
     agent = db.relationship('Agent', back_populates='rentals')
     serialize_only = ('id', 'name', 'image', 'location', 'description', 'price', 'status', 'created_at')
 
@@ -39,13 +41,25 @@ class For_Sale(db.Model, SerializerMixin):
     location = db.Column(db.String)
     description = db.Column(db.String)
     price = db.Column(db.Integer)
+    unit_type_id = db.Column(db.Integer, db.ForeignKey('unit_types.id'))
     agent_id = db.Column(db.Integer, db.ForeignKey('agents.id'))
     status = db.Column(db.String)
     created_at = db.Column(db.DateTime, default=func.now())
     
-    
+    unit_type = db.relationship('Unit_tpe', back_populates = 'for_sales')
     agent = db.relationship('Agent', back_populates='for_sales')
     serialize_only = ('id', 'name', 'image', 'location', 'description', 'price', 'status', 'created_at', 'unit_type')
+    
+class Unit_type(db.model, SerializerMixin):
+    __tablename__ = 'unit_types'
+    
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String, nullable=False, unique=True)
+    
+    rentals = db.relationship('Rent', back_populates='unit_type')
+    for_sales = db.relationship('For_Sale', back_populates='unit_type')
+    
+    serialize_only = ('id', 'name')
 
 class Agent(db.Model, UserMixin):
     __tablename__ = 'agents'
