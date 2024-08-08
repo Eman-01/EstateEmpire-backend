@@ -30,8 +30,8 @@ class Rental(db.Model, SerializerMixin):
     agent = db.relationship('Agent', back_populates='rentals')
     serialize_only = ('id', 'name', 'image', 'location', 'description', 'price', 'status', 'created_at')
 
-class Purchase(db.Model, SerializerMixin):
-    __tablename__ = 'purchases'
+class For_Sale(db.Model, SerializerMixin):
+    __tablename__ = 'for_sales'
     
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
@@ -43,8 +43,9 @@ class Purchase(db.Model, SerializerMixin):
     status = db.Column(db.String)
     created_at = db.Column(db.DateTime, default=func.now())
     
-    agent = db.relationship('Agent', back_populates='purchases')
-    serialize_only = ('id', 'name', 'image', 'location', 'description', 'price', 'status', 'created_at')
+    
+    agent = db.relationship('Agent', back_populates='for_sales')
+    serialize_only = ('id', 'name', 'image', 'location', 'description', 'price', 'status', 'created_at', 'unit_type')
 
 class Agent(db.Model, UserMixin):
     __tablename__ = 'agents'
@@ -55,7 +56,7 @@ class Agent(db.Model, UserMixin):
    
     
     rentals = db.relationship('Rental', back_populates='agent', lazy=True)
-    purchases = db.relationship('Purchase', back_populates='agent', lazy=True)
+    for_sales = db.relationship('For_Sale', back_populates='agent', lazy=True)
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
