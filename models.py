@@ -1,8 +1,10 @@
-from sqlalchemy import MetaData, DateTime, func
+from enum import Enum
+from sqlalchemy import MetaData, DateTime, func, Enum
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+
 
 convention = {
     "ix": 'ix_%(column_0_label)s',
@@ -14,6 +16,15 @@ convention = {
 metadata = MetaData(naming_convention=convention)
 db = SQLAlchemy(metadata=metadata)
 
+class PropertyType(Enum):
+    FOR_SALE = 'for_sale'
+    FOR_RENT = 'for_rent'
+    
+class PropertyStatus(Enum):
+    AVAILABLE = 'available'
+    SOLD = 'sold'
+    RENTED = 'rented'
+    
 class Property(db.Model, SerializerMixin):
     __tablename__ = 'properties'
     
@@ -21,18 +32,25 @@ class Property(db.Model, SerializerMixin):
     name = db.Column(db.String, nullable=False)
     image = db.Column(db.String)
     location = db.Column(db.String)
+    type = db.Column(Enum(PropertyType.FOR_SALE, PropertyType.FOR_RENT, native_enum=False))
     description = db.Column(db.String)
     price = db.Column(db.Integer)
     units = db.Column(db.Integer)
-    status = db.Column(db.String)
+    status = db.Column(Enum(PropertyStatus.AVAILABLE, PropertyStatus.SOLD, PropertyStatus.RENTED, native_enum=False))
     unit_type_id = db.Column(db.Integer, db.ForeignKey('unit_types.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     created_at = db.Column(db.DateTime, default=func.now())
     
-    unit_type = db.relationship('Unit_type', back_populates = 'unit_types')
-    user = db.relationship('User', back_populates = 'users')
-    serialize_only = ('id', 'name', 'image', 'location', 'description', 'price', 'units', 'type', 'status', 'unit_type_id','created_at')
+    unit_type = db.relationship('UnitType', back_populates='properties')
+    user = db.relationship('User', back_populates='properties')
+    purchase = db.relationship('Purchase', back_populates='property', uselist=False, cascade="all, delete-orphan")
+    rented = db.relationship('Rented', back_populates='property', cascade="all, delete-orphan")
+    
+    serialize_only = ('id', 'name', 'image', 'location', 'description', 'price', 'units', 'type', 'status', 'unit_type_id', 'user_id','created_at')
 
+    def __repr__(self):
+        return f'<Property {self.name}>'
+    
 class Purchase(db.Model, SerializerMixin):
     __tablename__ = 'purchases'
     
@@ -40,13 +58,14 @@ class Purchase(db.Model, SerializerMixin):
     amount = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     property_id = db.Column(db.Integer, db.ForeignKey('properties.id'))
-    mpesa_code = db.Column(db.Integer)
+    mpesa_code = db.Column(db.String)
     purchased_at = db.Column(db.DateTime, default=func.now())
     
-    property = db.relationship('Property', back_populates = 'properties')
+    property = db.relationship('Property', back_populates='purchase', uselist=False)
+    user = db.relationship('User', back_populates= 'purchases')
     
-    serialize_only = ('id', 'amount', 'mpesa_code', 'purchased_at')
-    
+    serialize_only = ('id', 'amount', 'mpesa_code', 'purchased_at', 'user_id', 'property_id')
+# Keeps track of the properties that have been rented   
 class Rented(db.Model, SerializerMixin):
      __tablename__ = "rented"
      
@@ -57,7 +76,25 @@ class Rented(db.Model, SerializerMixin):
      property_id = db.Column(db.Integer, db.ForeignKey('properties.id'))
      rented_at = db.Column(db.DateTime, default=func.now())
     
+     serialize_only= ('id', 'unit_number', 'status', 'rented_at', 'user_id', 'property_id')
+     user = db.relationship('User', back_populates='rented')
+     property = db.relationship('Property', back_populates='rented')
+     rental_payments = db.relationship('RentalPayments', back_populates='rented')
      
+# keeps track of the rental payments
+class RentalPayments(db.Model, SerializerMixin):
+    __tablename__ = 'rental_payments'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    rented_id = db.Column(db.Integer, db.ForeignKey('rented.id'))
+    month = db.Column(db.String)
+    mpesa_code = db.Column(db.String)
+    status = db.Column(db.String)
+    payment_date = db.Column(db.DateTime, default=func.now())
+    
+    rented = db.relationship('Rented', back_populates = 'rental_payments')
+    
+    serialize_only =('id', 'rented_id', 'month', 'mpesa_code', 'status', 'payment_date')
     
 class UnitType(db.Model, SerializerMixin):
     __tablename__ = 'unit_types'
@@ -65,21 +102,21 @@ class UnitType(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String, nullable=False, unique=True)
     
-    rentals = db.relationship('Rent', back_populates='unit_type')
-    for_sales = db.relationship('For_Sale', back_populates='unit_type')
+    properties = db.relationship('Property', back_populates='unit_type')
     
     serialize_only = ('id', 'name')
 
-class Agent(db.Model, UserMixin):
-    __tablename__ = 'agents'
+class User(db.Model, UserMixin):
+    __tablename__ = 'users'
     
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
+    properties = db.relationship('Property', back_populates='user')
    
     
-    rentals = db.relationship('Rental', back_populates='agent', lazy=True)
-    for_sales = db.relationship('For_Sale', back_populates='agent', lazy=True)
+    rented = db.relationship('Rented', back_populates='user', lazy=True)
+    purchases = db.relationship('Purchase', back_populates='user', lazy=True)
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
