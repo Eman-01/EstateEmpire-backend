@@ -14,8 +14,8 @@ convention = {
 metadata = MetaData(naming_convention=convention)
 db = SQLAlchemy(metadata=metadata)
 
-class Rental(db.Model, SerializerMixin):
-    __tablename__ = 'rentals'
+class Property(db.Model, SerializerMixin):
+    __tablename__ = 'properties'
     
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
@@ -23,14 +23,15 @@ class Rental(db.Model, SerializerMixin):
     location = db.Column(db.String)
     description = db.Column(db.String)
     price = db.Column(db.Integer)
+    units = db.Column(db.Integer)
     status = db.Column(db.String)
     unit_type_id = db.Column(db.Integer, db.ForeignKey('unit_types.id'))
-    agent_id = db.Column(db.Integer, db.ForeignKey('agents.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     created_at = db.Column(db.DateTime, default=func.now())
     
     unit_type = db.relationship('Unit_type', back_populates = 'unit_types')
-    agent = db.relationship('Agent', back_populates='rentals')
-    serialize_only = ('id', 'name', 'image', 'location', 'description', 'price', 'status', 'created_at')
+    user = db.relationship('User', back_populates = 'users')
+    serialize_only = ('id', 'name', 'image', 'location', 'description', 'price', 'units', 'type', 'status', 'unit_type_id','created_at')
 
 class For_Sale(db.Model, SerializerMixin):
     __tablename__ = 'for_sales'
@@ -50,7 +51,7 @@ class For_Sale(db.Model, SerializerMixin):
     agent = db.relationship('Agent', back_populates='for_sales')
     serialize_only = ('id', 'name', 'image', 'location', 'description', 'price', 'status', 'created_at', 'unit_type')
     
-class Unit_type(db.model, SerializerMixin):
+class UnitType(db.Model, SerializerMixin):
     __tablename__ = 'unit_types'
     
     id = db.Column(db.Integer, primary_key = True)
