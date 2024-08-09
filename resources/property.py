@@ -28,6 +28,22 @@ class PropertyResource(Resource):
             reponse = make_response(jsonify(property), 200)
             return reponse
         
+    # def patch(self, id=None):
+    #     args = parser.parse_args() 
+    #     property = Property.query.filter_by(id = id).first()
+        
+    #     if property == None:
+    #         return {'message': "Property not found"}, 404
+        
+    #     property.name = args['name']
+    #     property.image = args['image']
+    #     property.description = args['description']
+    #     property.location = args['location']
+    #     property.price = args['price']
+    #     property.type = args['type'].lower()
+    #     property.units = args['units']
+    #     property.status = args['status'].lower()
+        
     def post(self):
             args = parser.parse_args()
             new_property = Property(
@@ -44,6 +60,12 @@ class PropertyResource(Resource):
             db.session.add(new_property)
             db.session.commit()
             return new_property.to_dict(), 201
+        
+    def delete(self, id):
+        property = Property.query.get_or_404(id)
+        db.session.delete(property)
+        db.session.commit()
+        return {'message': "Property deleted"}, 200
         
 class PropertyForSaleResource(Resource):
     def get(self, id=None):
