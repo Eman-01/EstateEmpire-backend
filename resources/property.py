@@ -95,3 +95,4 @@ class PropertyForRentResource(Resource):
         else:
             properties = Property.query.filter_by(type=PropertyType.FOR_RENT).all()
             return jsonify([property.to_dict() for property in properties])
+        
