@@ -113,11 +113,11 @@ class User(db.Model, UserMixin):
     contact = db.Column(db.Integer, unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String, nullable=False, default='client')
+    role = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, default=func.now())
     
     properties = db.relationship('Property', back_populates='user', lazy=True)
-    rented_properties = db.relationship('Rented', back_populates='user', lazy=True)
+    rented = db.relationship('Rented', back_populates='user', lazy=True)
     purchases = db.relationship('Purchase', back_populates='user', lazy=True)
     
     def set_password(self, password):
