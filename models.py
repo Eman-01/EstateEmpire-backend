@@ -67,20 +67,20 @@ class Purchase(db.Model, SerializerMixin):
     serialize_only = ('id', 'amount', 'mpesa_code', 'purchased_at', 'user_id', 'property_id')
 # Keeps track of the properties that have been rented   
 class Rented(db.Model, SerializerMixin):
-     __tablename__ = "rented"
-     
-     id = db.Column(db.Integer, primary_key=True)
-     unit_number = db.Column(db.Integer)
-     status = db.Column(db.String)
-     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-     property_id = db.Column(db.Integer, db.ForeignKey('properties.id'))
-     rented_at = db.Column(db.DateTime, default=func.now())
+    __tablename__ = "rented"
     
-     serialize_only= ('id', 'unit_number', 'status', 'rented_at', 'user_id', 'property_id')
-     user = db.relationship('User', back_populates='rented')
-     property = db.relationship('Property', back_populates='rented')
-     rental_payments = db.relationship('RentalPayments', back_populates='rented')
-     
+    id = db.Column(db.Integer, primary_key=True)
+    unit_number = db.Column(db.Integer)
+    status = db.Column(db.String)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'))
+    rented_at = db.Column(db.DateTime, default=func.now())
+    
+    serialize_only= ('id', 'unit_number', 'status', 'rented_at', 'user_id', 'property_id')
+    user = db.relationship('User', back_populates='rented')
+    property = db.relationship('Property', back_populates='rented')
+    rental_payments = db.relationship('RentalPayments', back_populates='rented')
+    
 # keeps track of the rental payments
 class RentalPayments(db.Model, SerializerMixin):
     __tablename__ = 'rental_payments'
@@ -115,7 +115,7 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, default=func.now())
-    
+
     properties = db.relationship('Property', back_populates='user', lazy=True)
     rented = db.relationship('Rented', back_populates='user', lazy=True)
     purchases = db.relationship('Purchase', back_populates='user', lazy=True)
