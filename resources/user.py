@@ -1,12 +1,10 @@
-from flask import Flask, request
-from flask_sqlalchemy import SQLAlchemy
-from flask_restful import Api, Resource
+from flask import request
+from flask_restful import Resource
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import JWTManager, create_access_token
+from flask_jwt_extended import create_access_token
 
 from models import db, User
 
-# bcrypt = Bcrypt()
 
 class SignupResource(Resource):
     def post(self):
