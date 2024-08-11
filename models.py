@@ -110,10 +110,13 @@ class User(db.Model, UserMixin):
     __tablename__ = 'users'
     
     id = db.Column(db.Integer, primary_key=True)
+    contact = db.Column(db.Integer, unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
-    properties = db.relationship('Property', back_populates='user')
-    
+    role = db.Column(db.String, nullable=False)
+    created_at = db.Column(db.DateTime, default=func.now())
+
+    properties = db.relationship('Property', back_populates='user', lazy=True)
     rented = db.relationship('Rented', back_populates='user', lazy=True)
     purchases = db.relationship('Purchase', back_populates='user', lazy=True)
     
@@ -127,4 +130,6 @@ class User(db.Model, UserMixin):
         return {
             "id": self.id,
             "email": self.email,
+            "role": self.role
         }
+
