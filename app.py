@@ -11,6 +11,8 @@ from resources.user import SignupResource, LoginResource
 from resources.property import PropertyResource, PropertyForRentResource, PropertyForSaleResource
 from resources.unit_type import UnitTypeResource
 from resources.purchase import PurchaseResource, AllPurchasesResource
+from resources.rental import RentalResource
+from resources.rental_payments import RentalPaymentsResource, UserRentalPaymentsResource
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATABASE = os.environ.get("DB_URI", f"sqlite:///{os.path.join(BASE_DIR, 'app.db')}")
@@ -45,6 +47,9 @@ api.add_resource(PropertyForRentResource, '/properties/for-rent', '/properties/f
 api.add_resource(UnitTypeResource, '/unit_types', '/unit_types/<int:id>')
 api.add_resource(PurchaseResource, '/purchases')
 api.add_resource(AllPurchasesResource, '/all-purchases')
+api.add_resource(RentalPaymentsResource, '/rental-payments')
+api.add_resource(UserRentalPaymentsResource, '/user-rental-payments')
+api.add_resource(RentalResource, '/rentals')
 api.add_resource(SignupResource, '/signup')
 api.add_resource(LoginResource, '/login')
 
