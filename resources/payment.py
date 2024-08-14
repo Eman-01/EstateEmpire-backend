@@ -10,8 +10,8 @@ token_info = {
     'expires_at': None
 }
 def create_token():
-    consumer_key=''
-    consumer_secret=''
+    consumer_key='Gz9yMno47qs7qJsTitdZnos5nmCxCWi0yuWtkjWpAG4mArPn'
+    consumer_secret='SrsAo1XkrwTgco7HlerzKQVNnfj3z5SX8JJAGSii90SgFamOhKrlAjMrBtK1GoWm'
     auth=base64.b64encode(f"{consumer_key}:{consumer_secret}".encode()).decode()
     headers = {
         'Authorization': f'Basic {auth}'

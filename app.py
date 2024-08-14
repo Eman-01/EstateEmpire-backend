@@ -10,7 +10,10 @@ from models import db
 from resources.user import SignupResource, LoginResource
 from resources.property import PropertyResource, PropertyForRentResource, PropertyForSaleResource
 from resources.unit_type import UnitTypeResource
-from resources.purchase import PurchaseResource, AllPurchasesResource
+from resources.purchase import PurchaseResource
+# from resources.rental import RentalResource
+# from resources.rental_payments import RentalPaymentResource
+
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATABASE = os.environ.get("DB_URI", f"sqlite:///{os.path.join(BASE_DIR, 'app.db')}")
@@ -40,11 +43,14 @@ def index():
     return "<h1>EstateEmpire</h1>"
 
 api.add_resource(PropertyResource, '/properties', '/properties/<int:id>')
-api.add_resource(PropertyForSaleResource, '/properties/for-sale', '//properties/for-sale/<int:id>')
+api.add_resource(PropertyForSaleResource, '/properties/for-sale', '/properties/for-sale/<int:id>')
 api.add_resource(PropertyForRentResource, '/properties/for-rent', '/properties/for-rent//<int:id>')
 api.add_resource(UnitTypeResource, '/unit_types', '/unit_types/<int:id>')
 api.add_resource(PurchaseResource, '/purchases')
-api.add_resource(AllPurchasesResource, '/all-purchases')
+# api.add_resource(AllPurchasesResource, '/all-purchases')
+# api.add_resource(RentalPaymentResource, '/rented','/rental_payments')
+# api.add_resource(UserRentalPaymentsResource, '/user-rental-payments')
+# api.add_resource(RentalResource, '/rentals')
 api.add_resource(SignupResource, '/signup')
 api.add_resource(LoginResource, '/login')
 
