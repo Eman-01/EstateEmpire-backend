@@ -5,6 +5,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, current_user
 
 from models import db, Purchase
 
+
 parser = reqparse.RequestParser()
 parser.add_argument('amount', type=int, required=True)
 parser.add_argument('user_id', type=int, required=True)
