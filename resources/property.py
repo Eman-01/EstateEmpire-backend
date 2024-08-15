@@ -88,10 +88,10 @@ class PropertyForSaleResource(Resource):
             description=args['description'],
             location=args['location'],
             price=args['price'],
-            type=PropertyType.FOR_SALE,  # Set type to FOR_SALE
+            type=PropertyType.FOR_SALE,  
             units=args['units'],
             unit_type_id=args['unit_type_id'],
-            status=PropertyStatus.AVAILABLE  # Set status to AVAILABLE
+            status=PropertyStatus.AVAILABLE 
         )
         db.session.add(new_property)
         db.session.commit()
@@ -119,10 +119,10 @@ class PropertyForRentResource(Resource):
             description=args['description'],
             location=args['location'],
             price=args['price'],
-            type=PropertyType.FOR_RENT,  # Set type to FOR_SALE
+            type=PropertyType.FOR_RENT,  
             units=args['units'],
             unit_type_id=args['unit_type_id'],
-            status=PropertyStatus.AVAILABLE  # Assuming the new properties is available by default
+            status=PropertyStatus.AVAILABLE  
         )
         db.session.add(new_property)
         db.session.commit()
