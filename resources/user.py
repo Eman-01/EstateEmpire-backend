@@ -5,7 +5,6 @@ from flask_jwt_extended import create_access_token
 
 from models import db, User
 
-
 class SignupResource(Resource):
     def post(self):
         data = request.get_json()
