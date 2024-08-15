@@ -27,6 +27,22 @@ class SignupResource(Resource):
         db.session.commit()
 
         return {"message": "User created successfully."}, 201
+    
+    def get(self):
+        users = User.query.all()
+        if not users:
+            return {"message": "No users found."}, 404
+
+        users_data = []
+        for user in users:
+            users_data.append({
+                "id": user.id,
+                "email": user.email,
+                "contact": user.contact,
+                "role": user.role
+            })
+
+        return {"users": users_data}, 200
 
 class LoginResource(Resource):
     def post(self):
