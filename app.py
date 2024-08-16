@@ -6,17 +6,19 @@ from flask_restful import Api
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
-from .models import db
-from .resources.user import SignupResource, LoginResource
-from .resources.property import PropertyResource, PropertyForRentResource, PropertyForSaleResource
-from .resources.unit_type import UnitTypeResource
-from .resources.purchase import PurchaseResource, AllPurchasesResource
-from .resources.rental import RentalResource
-from .resources.rental_payments import RentalPaymentsResource, UserRentalPaymentsResource
+from models import db
+from resources.user import SignupResource, LoginResource
+from resources.property import PropertyResource, PropertyForRentResource, PropertyForSaleResource
+from resources.unit_type import UnitTypeResource
+from resources.purchase import PurchaseResource, AllPurchasesResource
+from resources.rental import RentalResource
+from resources.rental_payments import RentalPaymentsResource, UserRentalPaymentsResource
+from dotenv import load_dotenv
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATABASE = os.environ.get("DB_URI", f"sqlite:///{os.path.join(BASE_DIR, 'app.db')}")
 
+load_dotenv()
 app = Flask(__name__)
 api = Api(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL')
