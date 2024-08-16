@@ -6,22 +6,22 @@ from flask_restful import Api
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
-from models import db
-from resources.user import SignupResource, LoginResource
-from resources.property import PropertyResource, PropertyForRentResource, PropertyForSaleResource
-from resources.unit_type import UnitTypeResource
-from resources.purchase import PurchaseResource, AllPurchasesResource
-from resources.rental import RentalResource
-from resources.rental_payments import RentalPaymentsResource, UserRentalPaymentsResource
+from .models import db
+from .resources.user import SignupResource, LoginResource
+from .resources.property import PropertyResource, PropertyForRentResource, PropertyForSaleResource
+from .resources.unit_type import UnitTypeResource
+from .resources.purchase import PurchaseResource, AllPurchasesResource
+from .resources.rental import RentalResource
+from .resources.rental_payments import RentalPaymentsResource, UserRentalPaymentsResource
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATABASE = os.environ.get("DB_URI", f"sqlite:///{os.path.join(BASE_DIR, 'app.db')}")
 
 app = Flask(__name__)
 api = Api(app)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL')
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["JWT_SECRET_KEY"] = "your_secret_key"  
+app.config["JWT_SECRET_KEY"] = os.environ.get('JWT_SECRET_KEY') 
 app.json.compact = False
 
 
