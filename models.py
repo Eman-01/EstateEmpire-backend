@@ -72,6 +72,8 @@ class Rented(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     unit_number = db.Column(db.Integer)
     status = db.Column(db.String)
+    amount = db.Column(db.Integer)
+    mpesa_code = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     property_id = db.Column(db.Integer, db.ForeignKey('properties.id'))
     rented_at = db.Column(db.DateTime, default=func.now())

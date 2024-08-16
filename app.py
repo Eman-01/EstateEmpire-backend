@@ -10,7 +10,7 @@ from models import db
 from resources.user import SignupResource, LoginResource
 from resources.property import PropertyResource, PropertyForRentResource, PropertyForSaleResource
 from resources.unit_type import UnitTypeResource
-from resources.purchase import PurchaseResource, AllPurchasesResource
+from resources.purchase import PurchaseResource
 from resources.rental import RentalResource
 from resources.rental_payments import RentalPaymentsResource, UserRentalPaymentsResource
 from dotenv import load_dotenv
@@ -21,13 +21,15 @@ DATABASE = os.environ.get("DB_URI", f"sqlite:///{os.path.join(BASE_DIR, 'app.db'
 load_dotenv()
 app = Flask(__name__)
 api = Api(app)
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL')
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["JWT_SECRET_KEY"] = os.environ.get('JWT_SECRET_KEY') 
+
+jwt = JWTManager(app) 
+app.config["JWT_SECRET_KEY"] = "your_secret_key" 
 app.json.compact = False
 
 
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 
 bcrypt = Bcrypt(app)
@@ -48,7 +50,6 @@ api.add_resource(PropertyForSaleResource, '/properties/for-sale', '//properties/
 api.add_resource(PropertyForRentResource, '/properties/for-rent', '/properties/for-rent//<int:id>')
 api.add_resource(UnitTypeResource, '/unit_types', '/unit_types/<int:id>')
 api.add_resource(PurchaseResource, '/purchases')
-api.add_resource(AllPurchasesResource, '/all-purchases')
 api.add_resource(RentalPaymentsResource, '/rental-payments')
 api.add_resource(UserRentalPaymentsResource, '/user-rental-payments')
 api.add_resource(RentalResource, '/rentals')
