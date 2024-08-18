@@ -11,6 +11,10 @@ parser.add_argument('location', type=str, required=True, help='Location is requi
 parser.add_argument('price', type=int, required=True, help='Price is required')
 parser.add_argument('units', type=int, required=True, help='Number of units is required')
 parser.add_argument('unit_type_id', type=int, required=True, help='Unit type ID is required')
+parser.add_argument('bedrooms', type=int, required=False)  # Bedrooms field
+parser.add_argument('bathrooms', type=int, required=False)  # Bathrooms field
+parser.add_argument('amenities', type=str, required=False)  # Amenities field
+parser.add_argument('type', type=str, required=True, help='Type is required') 
 
 class PropertyResource(Resource):
     def get(self, id=None):
@@ -53,6 +57,9 @@ class PropertyResource(Resource):
                 price=args['price'],
                 type=args['type'].lower(),
                 units=args['units'],
+                bedrooms=args.get('bedrooms'),
+                bathrooms=args.get('bathrooms'),
+                amenities=args.get('amenities'),
                 unit_type_id=args['unit_type_id'],
                 status='available' 
             )
@@ -90,6 +97,9 @@ class PropertyForSaleResource(Resource):
             price=args['price'],
             type=PropertyType.FOR_SALE,  
             units=args['units'],
+            bedrooms=args.get('bedrooms'),
+            bathrooms=args.get('bathrooms'),
+            amenities=args.get('amenities'),
             unit_type_id=args['unit_type_id'],
             status=PropertyStatus.AVAILABLE 
         )
@@ -121,6 +131,9 @@ class PropertyForRentResource(Resource):
             price=args['price'],
             type=PropertyType.FOR_RENT,  
             units=args['units'],
+            bedrooms=args.get('bedrooms'),
+            bathrooms=args.get('bathrooms'),
+            amenities=args.get('amenities'),
             unit_type_id=args['unit_type_id'],
             status=PropertyStatus.AVAILABLE  
         )
