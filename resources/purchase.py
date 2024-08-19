@@ -1,10 +1,41 @@
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import request
-from models import db, Purchase, Property
-from .mpesa import Mpesa
+from models import db, Purchase, Property, User
+from resources.mpesa import Mpesa
+from sqlalchemy.orm import joinedload
 
 class PurchaseResource(Resource):
+    @jwt_required()
+    def get(self):
+        try:
+            current_user_id = get_jwt_identity()
+            
+            # Query purchases for the current user, including related property information
+            purchases = Purchase.query.options(
+                joinedload(Purchase.property)
+            ).filter_by(user_id=current_user_id).all()
+            
+            # Format the response data
+            purchase_data = []
+            for purchase in purchases:
+                purchase_data.append({
+                    'id': purchase.id,
+                    'amount': purchase.amount,
+                    'purchased_at': purchase.purchased_at.isoformat(),
+                    'property': {
+                        'name': purchase.property.name,
+                        'location': purchase.property.location,
+                        'price': purchase.property.price
+                    }
+                })
+            
+            return {"purchases": purchase_data}, 200
+
+        except Exception as e:
+            print("Error in PurchaseResource GET:", str(e))
+            return {"message": "An error occurred while fetching purchases"}, 500
+
     @jwt_required()
     def post(self):
         try:

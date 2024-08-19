@@ -7,7 +7,7 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from models import db
-from resources.user import SignupResource, LoginResource
+from resources.user import SignupResource, LoginResource, EmailVerificationResource
 from resources.property import PropertyResource, PropertyForRentResource, PropertyForSaleResource
 from resources.unit_type import UnitTypeResource
 from resources.purchase import PurchaseResource
@@ -18,13 +18,13 @@ from dotenv import load_dotenv
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATABASE = os.environ.get("DB_URI", f"sqlite:///{os.path.join(BASE_DIR, 'app.db')}")
 
-load_dotenv()
+# load_dotenv()
 app = Flask(__name__)
 api = Api(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-jwt = JWTManager(app) 
+# jwt = JWTManager(app) 
 app.config["JWT_SECRET_KEY"] = "your_secret_key" 
 app.json.compact = False
 
@@ -54,6 +54,7 @@ api.add_resource(RentalPaymentsResource, '/rental-payments')
 api.add_resource(UserRentalPaymentsResource, '/user-rental-payments')
 api.add_resource(RentalResource, '/rentals')
 api.add_resource(SignupResource, '/signup')
+api.add_resource(EmailVerificationResource, '/verify-email')
 api.add_resource(LoginResource, '/login')
 
 if __name__ == '__main__':
