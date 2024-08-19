@@ -36,6 +36,9 @@ class Property(db.Model, SerializerMixin):
     description = db.Column(db.String)
     price = db.Column(db.Integer)
     units = db.Column(db.Integer)
+    bedrooms = db.Column(db.Integer)
+    bathrooms = db.Column(db.Integer)
+    amenities = db.Column(db.String)
     status = db.Column(Enum(PropertyStatus.AVAILABLE, PropertyStatus.SOLD, PropertyStatus.RENTED, native_enum=False))
     unit_type_id = db.Column(db.Integer, db.ForeignKey('unit_types.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -46,7 +49,7 @@ class Property(db.Model, SerializerMixin):
     purchase = db.relationship('Purchase', back_populates='property', uselist=False, cascade="all, delete-orphan")
     rented = db.relationship('Rented', back_populates='property', cascade="all, delete-orphan")
     
-    serialize_only = ('id', 'name', 'image', 'location', 'description', 'price', 'units', 'type', 'status', 'unit_type_id', 'user_id','created_at')
+    serialize_only = ('id', 'name', 'image', 'location', 'description', 'price', 'units', 'bedrooms', 'bathrooms', 'amenities', 'type', 'status', 'unit_type_id', 'user_id', 'created_at')
 
     def __repr__(self):
         return f'<Property {self.name}>'
