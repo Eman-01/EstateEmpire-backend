@@ -18,13 +18,13 @@ from dotenv import load_dotenv
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATABASE = os.environ.get("DB_URI", f"sqlite:///{os.path.join(BASE_DIR, 'app.db')}")
 
-# load_dotenv()
+load_dotenv()
 app = Flask(__name__)
 api = Api(app)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL')
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-# jwt = JWTManager(app) 
+jwt = JWTManager(app) 
 app.config["JWT_SECRET_KEY"] = "your_secret_key" 
 app.json.compact = False
 
